@@ -8,5 +8,5 @@ Also note that the final version will depend on having access to a bitcoind API 
 
 ## Dependencies
 
- * jsSHA
- * AutobahnJS (TODO: Specify version, need WAMP 1 support)
+ * [jsSHA 1.5.0+](https://caligatio.github.io/jsSHA/)
+ * [AutobahnJS 0.8.2](http://autobahn.ws/js/reference_wampv1.html) (Latest version that supports WAMP 1, where [Turnpike](https://github.com/jcelliott/turnpike) is currently stuck at)
