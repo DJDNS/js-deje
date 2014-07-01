@@ -40,7 +40,14 @@ DejeClient.prototype.publish = function(message) {
 
 DejeClient.prototype.getHistory = function(hash) {
     var events = [];
-    // TODO: get values from this.events
+    var hashes = [];
+    for (var k in this.events) {
+        hashes.push(k)
+    }
+    hashes.sort();
+    for (var h in hashes) {
+        events.push(this.events[h]);
+    }
     return events;
 }
 
