@@ -31,7 +31,7 @@ DejeClient.prototype._on_disconnect = function(code, reason, detail) {
 
 DejeClient.prototype._on_msg = function(topic, message) {
     // TODO: Appropriate client behavior
-    this.logger(message);
+    this.logger("broadcast: " + JSON.stringify(message));
 }
 
 DejeClient.prototype.publish = function(message) {
@@ -46,7 +46,8 @@ DejeClient.prototype.getHistory = function(hash) {
     }
     hashes.sort();
     for (var h in hashes) {
-        events.push(this.events[h]);
+        var hash = hashes[h];
+        events.push(this.events[hash]);
     }
     return events;
 }
@@ -90,6 +91,6 @@ DejeEvent.prototype.serialize = function() {
 
 DejeEvent.prototype.getHash = function() {
     // TODO: Memoize
-    return (new jsSHA(serial, "TEXT"))
+    return (new jsSHA(this.serialize(), "TEXT"))
         .getHash("SHA-1", "HEX");
 }
