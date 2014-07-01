@@ -121,6 +121,7 @@ DejeEvent.prototype.apply = function(state) {
     } else {
         throw "No custom event support yet";
     }
+    state.hash = this.getHash();
 }
 
 function DejeState() {
