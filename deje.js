@@ -34,6 +34,10 @@ DejeClient.prototype._on_msg = function(topic, message) {
     this.logger(message);
 }
 
+DejeClient.prototype.publish = function(message) {
+    this.session.publish(this.topic, message);
+}
+
 DejeClient.prototype.getHistory = function(hash) {
     var events = [];
     // TODO: get values from this.events
@@ -48,7 +52,7 @@ DejeClient.prototype.getEvent = function(hash) {
     return this.events[hash];
 }
 DejeClient.prototype.promoteEvent = function(ev) {
-    this.session.publish(this.topic, {
+    this.publish({
         "type": "01-publish-history",
         "tip_hash": ev.getHash(),
         "history": this.getHistory(),
