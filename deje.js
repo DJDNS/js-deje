@@ -1,6 +1,7 @@
 function DejeClient(url, topic, options) {
     this.url = url;
     this.topic = topic;
+    this.state = new DejeState();
     this.session = undefined;
     this.events = {};
 
@@ -66,6 +67,23 @@ DejeClient.prototype.promoteEvent = function(ev) {
         "history": this.getHistory(),
     });
 }
+DejeClient.prototype.applyEvent = function(ev, noreset) {
+    if (!noreset) {
+        this.state.reset();
+    }
+    if (ev.parent != "") {
+        var parent = this.getEvent(ev.parent)
+        if (parent == undefined) {
+            return this.logger("No parent " + ev.parent)
+        }
+        this.applyEvent(parent, true);
+    }
+    try {
+        ev.apply(this.state);
+    } catch (e) {
+        this.logger(e);
+    }
+}
 
 function DejeEvent(content) {
     this.handler = content.handler;
@@ -93,6 +111,16 @@ DejeEvent.prototype.getHash = function() {
     // TODO: Memoize
     return (new jsSHA(this.serialize(), "TEXT"))
         .getHash("SHA-1", "HEX");
+}
+
+DejeEvent.prototype.apply = function(state) {
+    if (this.handler == "SET") {
+        state.traverse(this.args.path).SET(this.args.value);
+    } else if (this.handler == "DELETE") {
+        state.traverse(this.args.path).DELETE();
+    } else {
+        throw "No custom event support yet";
+    }
 }
 
 function DejeState() {
