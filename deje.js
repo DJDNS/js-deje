@@ -1,9 +1,53 @@
+function DejeCallback(name, callback, enabled) {
+    if (arguments.length < 3) {
+        enabled = true;
+    }
+
+    this.name = name;
+    this.callback = callback;
+    this.enabled = enabled;
+}
+
+DejeCallback.prototype.on = function() {
+    this.enabled = true;
+}
+DejeCallback.prototype.off = function() {
+    this.enabled = false;
+}
+
+function DejeCallbackManager(context) {
+    this.context = context;
+    this.callbacks = {};
+}
+DejeCallbackManager.prototype.add = function(name, callback) {
+    var cb = new DejeCallback(name, callback);
+    this.register(cb);
+}
+DejeCallbackManager.prototype.register = function(djcb) {
+    this.callbacks[djcb.name] = djcb;
+}
+DejeCallbackManager.prototype.run = function() {
+    for (var c in this.callbacks) {
+        var djcb = this.callbacks[c];
+        if (djcb.enabled) {
+            djcb.callback.apply(this.context, arguments);
+        }
+    }
+}
+
 function DejeClient(url, topic, options) {
     this.url = url;
     this.topic = topic;
     this.state = new DejeState();
     this.session = undefined;
     this.events = {};
+    this.cb_managers = {
+        "msg" : new DejeCallbackManager(this)
+    }
+
+    this.cb_managers.msg.add('log', function(topic, message) {
+        this.logger("broadcast: " + JSON.stringify(message));
+    });
 
     options = (options != undefined) ? options : {};
     this.logger = options.logger || console.log;
@@ -31,8 +75,7 @@ DejeClient.prototype._on_disconnect = function(code, reason, detail) {
 }
 
 DejeClient.prototype._on_msg = function(topic, message) {
-    // TODO: Appropriate client behavior
-    this.logger("broadcast: " + JSON.stringify(message));
+    this.cb_managers.msg.run(topic, message);
 }
 
 DejeClient.prototype.publish = function(message) {
