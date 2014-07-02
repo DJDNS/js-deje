@@ -43,10 +43,20 @@ function DejeClient(url, topic, options) {
     this.events = {};
     this.cb_managers = {
         "msg" : new DejeCallbackManager(this),
+        "connect"     : new DejeCallbackManager(this),
+        "disconnect"  : new DejeCallbackManager(this),
         "store_event" : new DejeCallbackManager(this),
         "goto_event"  : new DejeCallbackManager(this)
     }
 
+    this.cb_managers.connect.add('log', function() {
+        this.logger("Connected to " + this.url);
+    });
+    this.cb_managers.disconnect.add('log', function(code, reason, detail) {
+        this.logger("Disconnected from " + this.url);
+        this.logger("Err code " + code + ": " + reason);
+        this.logger(JSON.stringify(detail));
+    });
     this.cb_managers.msg.add('log', function(topic, message) {
         this.logger("broadcast: " + JSON.stringify(message));
     });
@@ -67,15 +77,13 @@ DejeClient.prototype.connect = function(){
 
 DejeClient.prototype._on_connect = function(session) {
     this.session = session;
-    this.logger("Connected to " + this.url);
-
     session.subscribe(this.topic, this._on_msg.bind(this));
+
+    this.cb_managers.connect.run();
 }
 
 DejeClient.prototype._on_disconnect = function(code, reason, detail) {
-    this.logger("Disconnected from " + this.url);
-    this.logger("Err code " + code + ": " + reason);
-    this.logger(JSON.stringify(detail));
+    this.cb_managers.disconnect.run(code, reason, detail);
 }
 
 DejeClient.prototype._on_msg = function(topic, message) {
