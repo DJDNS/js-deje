@@ -42,12 +42,16 @@ function DejeClient(url, topic, options) {
     this.session = undefined;
     this.events = {};
     this.cb_managers = {
-        "msg" : new DejeCallbackManager(this)
+        "msg" : new DejeCallbackManager(this),
+        "store_event" : new DejeCallbackManager(this),
+        "goto_event"  : new DejeCallbackManager(this)
     }
 
     this.cb_managers.msg.add('log', function(topic, message) {
         this.logger("broadcast: " + JSON.stringify(message));
     });
+    this.cb_managers.msg.add('sniff_events',
+        this._on_msg_sniff_events.bind(this));
 
     options = (options != undefined) ? options : {};
     this.logger = options.logger || console.log;
@@ -77,6 +81,14 @@ DejeClient.prototype._on_disconnect = function(code, reason, detail) {
 DejeClient.prototype._on_msg = function(topic, message) {
     this.cb_managers.msg.run(topic, message);
 }
+DejeClient.prototype._on_msg_sniff_events = function(topic, message) {
+    if (message.type == "01-publish-history") {
+        var hist = message.history;
+        for (var i=0; i<hist.length; i++) {
+            this.storeEvent(new DejeEvent(hist[i]));
+        }
+    }
+}
 
 DejeClient.prototype.publish = function(message) {
     this.session.publish(this.topic, message);
@@ -99,6 +111,7 @@ DejeClient.prototype.getHistory = function(hash) {
 DejeClient.prototype.storeEvent = function(ev) {
     hash = ev.getHash();
     this.events[hash] = ev;
+    this.cb_managers.store_event.run(ev);
 }
 DejeClient.prototype.getEvent = function(hash) {
     return this.events[hash];
@@ -126,6 +139,7 @@ DejeClient.prototype.applyEvent = function(ev, noreset) {
     } catch (e) {
         this.logger(e);
     }
+    this.cb_managers.goto_event.run(ev);
 }
 
 function DejeEvent(content) {
