@@ -51,6 +51,7 @@ function DejeClient(url, topic, options) {
 
     this.cb_managers.connect.add('log', function() {
         this.logger("Connected to " + this.url);
+        this.logger("Subscribed to " + this.topic);
     });
     this.cb_managers.disconnect.add('log', function(code, reason, detail) {
         this.logger("Disconnected from " + this.url);
