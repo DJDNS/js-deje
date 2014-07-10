@@ -1,3 +1,32 @@
+DejeUtils = {};
+
+DejeUtils.serialize = function(object) {
+    if (typeof object === "object" && object != null) {
+        if (Array.isArray(object)) {
+            // Still need to handle specially, so maps inside are treated right
+            return '[' + object.map(DejeUtils.serialize).join(',') + ']';
+        } else {
+            // Sorted key order
+            var keys = [];
+            for (k in object) {
+                if (object.hasOwnProperty(k)) {
+                    keys.push(k);
+                }
+            }
+            keys.sort()
+            var components = [];
+            for (k in keys) {
+                var key = keys[k];
+                var value = DejeUtils.serialize(object[key]);
+                components.push('"' + key + '":' + value)
+            }
+            return '{' + components.join(',') + '}';
+        }
+    } else {
+        return JSON.stringify(object);
+    }
+}
+
 function DejeCallback(name, callback, enabled) {
     if (arguments.length < 3) {
         enabled = true;
@@ -168,7 +197,7 @@ DejeEvent.prototype.getContent = function() {
 DejeEvent.prototype.serialize = function() {
     var serial = '{"parent":"' + this.parent + '",'
                + '"handler":"' + this.handler + '",'
-               + '"args":' + JSON.stringify(this.args) + '}'
+               + '"args":' + DejeUtils.serialize(this.args) + '}'
                ;
     return serial;
 }
