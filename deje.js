@@ -278,6 +278,13 @@ DejeStateTraversal.prototype.DELETE = function() {
     } else {
         var parent = this.get_parent();
         var key = this.get_last_key();
-        delete parent[key];
+        if (typeof parent != "object") {
+            throw "Cannot delete child of non-container object";
+        }
+        if (Array.isArray(parent)) {
+            parent.splice(key, 1);
+        } else {
+            delete parent[key];
+        }
     }
 }
