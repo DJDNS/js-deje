@@ -120,10 +120,16 @@ DejeClient.prototype._on_msg = function(topic, message) {
     this.cb_managers.msg.run(topic, message);
 }
 DejeClient.prototype._on_msg_sniff_events = function(topic, message) {
+    var events;
     if (message.type == "01-publish-history") {
-        var hist = message.history;
-        for (var i=0; i<hist.length; i++) {
-            this.storeEvent(new DejeEvent(hist[i]));
+        events = message.history;
+    } else if (message.type == "01-publish-events") {
+        events = message.events;
+    }
+
+    if (events != undefined) {
+        for (var i=0; i<events.length; i++) {
+            this.storeEvent(new DejeEvent(events[i]));
         }
     }
 }
