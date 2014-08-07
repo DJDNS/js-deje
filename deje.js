@@ -95,6 +95,8 @@ function DejeClient(url, topic, options) {
         this._on_msg_sniff_events.bind(this));
     this.cb_managers.msg.add('publish_events',
         this._on_msg_publish_events.bind(this));
+    this.cb_managers.msg.add('publish_ts',
+        this._on_msg_publish_ts.bind(this));
 
     options = (options != undefined) ? options : {};
     this.logger = options.logger || console.log;
@@ -142,6 +144,11 @@ DejeClient.prototype._on_msg_publish_events = function(topic, message) {
         "type": "02-publish-events",
         "events": this.sortEventHashes(this.events),
     });
+}
+DejeClient.prototype._on_msg_publish_ts = function(topic, message) {
+    if (message.type == "02-request-timestamps") {
+        this.publishTimestamps()
+    }
 }
 
 DejeClient.prototype.publish = function(message) {
