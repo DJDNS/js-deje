@@ -92,6 +92,8 @@ function DejeClient(url, topic, options) {
     });
     this.cb_managers.msg.add('sniff_events',
         this._on_msg_sniff_events.bind(this));
+    this.cb_managers.msg.add('publish_events',
+        this._on_msg_publish_events.bind(this));
 
     options = (options != undefined) ? options : {};
     this.logger = options.logger || console.log;
@@ -131,23 +133,36 @@ DejeClient.prototype._on_msg_sniff_events = function(topic, message) {
         }
     }
 }
+DejeClient.prototype._on_msg_publish_events = function(topic, message) {
+    if (message.type != "02-request-events") {
+        return
+    }
+    this.publish({
+        "type": "02-publish-events",
+        "events": this.sortEventHashes(this.events),
+    });
+}
 
 DejeClient.prototype.publish = function(message) {
     this.session.publish(this.topic, message);
 }
 
-DejeClient.prototype.getHistory = function(hash) {
-    var events = [];
+DejeClient.prototype.sortEventHashes = function(events_map) {
+    var events_array = [];
     var hashes = [];
-    for (var k in this.events) {
+    for (var k in events_map) {
         hashes.push(k)
     }
     hashes.sort();
     for (var h in hashes) {
         var hash = hashes[h];
-        events.push(this.events[hash]);
+        events_array.push(events_map[hash]);
     }
-    return events;
+    return events_array;
+}
+DejeClient.prototype.getHistory = function(hash) {
+    // TODO: do this more selectively
+    return this.sortEventHashes(this.events);
 }
 
 DejeClient.prototype.storeEvent = function(ev) {
