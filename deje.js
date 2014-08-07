@@ -70,6 +70,7 @@ function DejeClient(url, topic, options) {
     this.state = new DejeState();
     this.session = undefined;
     this.events = {};
+    this.timestamps = [];
     this.cb_managers = {
         "msg" : new DejeCallbackManager(this),
         "connect"     : new DejeCallbackManager(this),
@@ -165,6 +166,13 @@ DejeClient.prototype.getHistory = function(hash) {
     return this.sortEventHashes(this.events);
 }
 
+DejeClient.prototype.publishTimestamps = function() {
+    this.publish({
+        "type": "02-publish-timestamps",
+        "timestamps": this.timestamps
+    });
+}
+
 DejeClient.prototype.storeEvent = function(ev) {
     hash = ev.getHash();
     this.events[hash] = ev;
@@ -174,10 +182,8 @@ DejeClient.prototype.getEvent = function(hash) {
     return this.events[hash];
 }
 DejeClient.prototype.promoteEvent = function(ev) {
-    this.publish({
-        "type": "02-publish-timestamps",
-        "timestamps": [ev.getHash()],
-    });
+    this.timestamps = [ev.getHash()];
+    this.publishTimestamps();
 }
 DejeClient.prototype.applyEvent = function(ev, noreset) {
     if (!noreset) {
