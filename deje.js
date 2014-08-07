@@ -121,9 +121,7 @@ DejeClient.prototype._on_msg = function(topic, message) {
 }
 DejeClient.prototype._on_msg_sniff_events = function(topic, message) {
     var events;
-    if (message.type == "01-publish-history") {
-        events = message.history;
-    } else if (message.type == "01-publish-events") {
+    if (message.type == "02-publish-events") {
         events = message.events;
     }
 
@@ -162,9 +160,8 @@ DejeClient.prototype.getEvent = function(hash) {
 }
 DejeClient.prototype.promoteEvent = function(ev) {
     this.publish({
-        "type": "01-publish-history",
-        "tip_hash": ev.getHash(),
-        "history": this.getHistory(),
+        "type": "02-publish-timestamps",
+        "timestamps": [ev.getHash()],
     });
 }
 DejeClient.prototype.applyEvent = function(ev, noreset) {
