@@ -73,6 +73,7 @@ function DejeClient(url, topic, options) {
     this.timestamps = [];
     this.cb_managers = {
         "msg" : new DejeCallbackManager(this),
+        "send": new DejeCallbackManager(this),
         "connect"     : new DejeCallbackManager(this),
         "disconnect"  : new DejeCallbackManager(this),
         "store_event" : new DejeCallbackManager(this),
@@ -88,13 +89,18 @@ function DejeClient(url, topic, options) {
         this.logger("Err code " + code + ": " + reason);
         this.logger(JSON.stringify(detail));
     });
+    this.cb_managers.send.add('log', function(topic, message) {
+        this.logger("sent: " + JSON.stringify(message));
+    });
     this.cb_managers.msg.add('log', function(topic, message) {
-        this.logger("broadcast: " + JSON.stringify(message));
+        this.logger("rcvd: " + JSON.stringify(message));
     });
     this.cb_managers.msg.add('sniff_events',
         this._on_msg_sniff_events.bind(this));
     this.cb_managers.msg.add('publish_events',
         this._on_msg_publish_events.bind(this));
+    this.cb_managers.msg.add('sniff_ts',
+        this._on_msg_sniff_ts.bind(this));
     this.cb_managers.msg.add('publish_ts',
         this._on_msg_publish_ts.bind(this));
 
@@ -145,6 +151,11 @@ DejeClient.prototype._on_msg_publish_events = function(topic, message) {
         "events": this.sortEventHashes(this.events),
     });
 }
+DejeClient.prototype._on_msg_sniff_ts = function(topic, message) {
+    if (message.type == "02-publish-timestamps") {
+        this.timestamps = message.timestamps;
+    }
+}
 DejeClient.prototype._on_msg_publish_ts = function(topic, message) {
     if (message.type == "02-request-timestamps") {
         this.publishTimestamps()
@@ -152,7 +163,9 @@ DejeClient.prototype._on_msg_publish_ts = function(topic, message) {
 }
 
 DejeClient.prototype.publish = function(message) {
-    this.session.publish(this.topic, message);
+    // Final argument is excludeMe
+    this.session.publish(this.topic, message, true);
+    this.cb_managers.send.run(this.topic, message);
 }
 
 DejeClient.prototype.sortEventHashes = function(events_map) {
