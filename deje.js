@@ -77,7 +77,8 @@ function DejeClient(url, topic, options) {
         "connect"     : new DejeCallbackManager(this),
         "disconnect"  : new DejeCallbackManager(this),
         "store_event" : new DejeCallbackManager(this),
-        "goto_event"  : new DejeCallbackManager(this)
+        "goto_event"  : new DejeCallbackManager(this),
+        "update_ts"   : new DejeCallbackManager(this)
     }
 
     this.cb_managers.connect.add('log', function() {
@@ -153,13 +154,19 @@ DejeClient.prototype._on_msg_publish_events = function(topic, message) {
 }
 DejeClient.prototype._on_msg_sniff_ts = function(topic, message) {
     if (message.type == "02-publish-timestamps") {
-        this.timestamps = message.timestamps;
+        this.setTimestamps(message.timestamps);
     }
 }
 DejeClient.prototype._on_msg_publish_ts = function(topic, message) {
     if (message.type == "02-request-timestamps") {
         this.publishTimestamps()
     }
+}
+
+DejeClient.prototype.setTimestamps = function(timestamps) {
+    // TODO: validate
+    this.timestamps = timestamps;
+    this.cb_managers.update_ts.run(timestamps);
 }
 
 DejeClient.prototype.publish = function(message) {
@@ -202,7 +209,7 @@ DejeClient.prototype.getEvent = function(hash) {
     return this.events[hash];
 }
 DejeClient.prototype.promoteEvent = function(ev) {
-    this.timestamps = [ev.getHash()];
+    this.setTimestamps([ ev.getHash() ]);
     this.publishTimestamps();
 }
 DejeClient.prototype.applyEvent = function(ev, noreset) {
