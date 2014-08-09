@@ -1,0 +1,3 @@
+[submodule "serialization_tests/deje-serialization-tests"]
+	path = serialization_tests/deje-serialization-tests
+	url = https://github.com/DJDNS/deje-serialization-tests
