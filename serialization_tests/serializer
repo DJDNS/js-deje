@@ -8,7 +8,8 @@ requirejs.config({
     nodeRequire: require
 })
 
-requirejs(['deje/event','deje/document'], function(Event, Document) {
+requirejs(['deje/event','deje/document','deje/utils'],
+function(Event, Document, utils) {
     var object_type = process.argv[2],
         format = process.argv[3],
         input = '';
@@ -34,7 +35,9 @@ requirejs(['deje/event','deje/document'], function(Event, Document) {
         input_object = JSON.parse(input);
         built_object = object_types[object_type](input_object);
         output = built_object.serialize(formats[format]);
-        //console.log(built_object);
+        if (format == 'hash') {
+            output = utils.hash(output);
+        }
         process.stdout.write(output);
     });
 });

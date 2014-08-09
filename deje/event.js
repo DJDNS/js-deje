@@ -18,14 +18,14 @@ DejeEvent.prototype.key_order = ["parent", "handler", "args"];
 DejeEvent.prototype.serialize = function(indent) {
     return DejeUtils.serialize(this, {
         "indent": indent,
-        "prefix": ""
+        "prefix": (indent === "") ? "" : "\n",
+        "kv_space": (indent === "") ? "" : " "
     });
 }
 
 DejeEvent.prototype.getHash = function() {
     // TODO: Memoize
-    return (new jsSHA(this.serialize(), "TEXT"))
-        .getHash("SHA-1", "HEX");
+    return DejeUtils.hash(this.serialize());
 }
 
 DejeEvent.prototype.apply = function(state) {

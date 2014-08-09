@@ -15,7 +15,8 @@ DejeDocument.prototype.key_order = ["topic", "events", "quorums", "timestamps"];
 DejeDocument.prototype.serialize = function(indent) {
     return DejeUtils.serialize(this, {
         "indent": indent,
-        "prefix": ""
+        "prefix": (indent === "") ? "" : "\n",
+        "kv_space": (indent === "") ? "" : " "
     });
 }
 
