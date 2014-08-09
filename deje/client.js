@@ -146,7 +146,7 @@ DejeClient.prototype.getEvent = function(hash) {
     return this.events[hash];
 }
 DejeClient.prototype.promoteEvent = function(ev) {
-    this.setTimestamps([ ev.getHash() ]);
+    this.setTimestamps(this.timestamps.concat([ ev.getHash() ]));
     this.publishTimestamps();
 }
 DejeClient.prototype.applyEvent = function(ev, noreset) {
