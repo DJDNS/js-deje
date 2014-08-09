@@ -1,0 +1,13 @@
+#!/usr/bin/env node
+
+var requirejs = require('requirejs')
+requirejs.config({
+    paths: {
+        "deje": "../deje"
+    },
+    nodeRequire: require
+})
+
+requirejs(['deje/client'], function(deje) {
+    console.log(deje)
+});

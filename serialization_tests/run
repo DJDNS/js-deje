@@ -1,0 +1,3 @@
+#!/bin/bash -e
+
+./deje-serialization-tests/run ./serializer
