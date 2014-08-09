@@ -8,12 +8,16 @@ function serialize(object, format) {
         } else {
             // Sorted key order
             var keys = [];
-            for (k in object) {
-                if (object.hasOwnProperty(k)) {
-                    keys.push(k);
+            if (object.key_order) {
+                keys = object.key_order;
+            } else {
+                for (k in object) {
+                    if (object.hasOwnProperty(k)) {
+                        keys.push(k);
+                    }
                 }
+                keys.sort()
             }
-            keys.sort()
             var components = [];
             for (k in keys) {
                 var key = keys[k];

@@ -13,13 +13,18 @@ requirejs(['deje/event','deje/document'], function(Event, Document) {
         format = process.argv[3],
         input = '';
 
-    object_types = {
+    var object_types = {
         'event': function(input_object) {
             return new Event(input_object);
         },
         'document': function(input_object) {
             return new Document(input_object);
         },
+    };
+    var formats = {
+        "hash": "",
+        "compact": "",
+        "pretty4": "    ",
     };
 
     process.stdin.on('data', function (chunk) {
@@ -28,7 +33,8 @@ requirejs(['deje/event','deje/document'], function(Event, Document) {
     process.stdin.on('end', function() {
         input_object = JSON.parse(input);
         built_object = object_types[object_type](input_object);
-        output = built_object.serialize();
+        output = built_object.serialize(formats[format]);
+        //console.log(built_object);
         process.stdout.write(output);
     });
 });

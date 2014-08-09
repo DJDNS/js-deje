@@ -6,14 +6,14 @@ function DejeDocument(content) {
     this.quorums    = content.quorums;
     this.timestamps = content.timestamps;
 
-    for (var i=0; i<this.events.length; i++) {
-        this.events[i] = new Event(this.events[i]);
+    for (var k in this.events) {
+        this.events[k] = new Event(this.events[k]);
     }
 }
 
+DejeDocument.prototype.key_order = ["topic", "events", "quorums", "timestamps"];
 DejeDocument.prototype.serialize = function(indent) {
     return DejeUtils.serialize(this, {
-        "keys": ["topic", "events", "quorums", "timestamps"],
         "indent": indent,
         "prefix": ""
     });

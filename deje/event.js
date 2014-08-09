@@ -14,9 +14,9 @@ DejeEvent.prototype.getContent = function() {
     };
 }
 
+DejeEvent.prototype.key_order = ["parent", "handler", "args"];
 DejeEvent.prototype.serialize = function(indent) {
     return DejeUtils.serialize(this, {
-        "keys": ["parent", "handler", "args"],
         "indent": indent,
         "prefix": ""
     });
