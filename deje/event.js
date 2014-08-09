@@ -14,12 +14,12 @@ DejeEvent.prototype.getContent = function() {
     };
 }
 
-DejeEvent.prototype.serialize = function() {
-    var serial = '{"parent":"' + this.parent + '",'
-               + '"handler":"' + this.handler + '",'
-               + '"args":' + DejeUtils.serialize(this.args) + '}'
-               ;
-    return serial;
+DejeEvent.prototype.serialize = function(indent) {
+    return DejeUtils.serialize(this, {
+        "keys": ["parent", "handler", "args"],
+        "indent": indent,
+        "prefix": ""
+    });
 }
 
 DejeEvent.prototype.getHash = function() {

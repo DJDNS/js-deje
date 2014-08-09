@@ -1,6 +1,6 @@
 define([], function() {
 
-function serialize(object) {
+function serialize(object, format) {
     if (typeof object === "object" && object != null) {
         if (Array.isArray(object)) {
             // Still need to handle specially, so maps inside are treated right

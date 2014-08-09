@@ -8,6 +8,27 @@ requirejs.config({
     nodeRequire: require
 })
 
-requirejs(['deje/client'], function(deje) {
-    console.log(deje)
+requirejs(['deje/event','deje/document'], function(Event, Document) {
+    var object_type = process.argv[2],
+        format = process.argv[3],
+        input = '';
+
+    object_types = {
+        'event': function(input_object) {
+            return new Event(input_object);
+        },
+        'document': function(input_object) {
+            return new Document(input_object);
+        },
+    };
+
+    process.stdin.on('data', function (chunk) {
+        input += chunk;
+    });
+    process.stdin.on('end', function() {
+        input_object = JSON.parse(input);
+        built_object = object_types[object_type](input_object);
+        output = built_object.serialize();
+        process.stdout.write(output);
+    });
 });
