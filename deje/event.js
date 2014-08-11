@@ -16,10 +16,13 @@ DejeEvent.prototype.getContent = function() {
 
 DejeEvent.prototype.key_order = ["parent", "handler", "args"];
 DejeEvent.prototype.serialize = function(indent) {
+    if (indent === undefined) {
+        indent = '';
+    }
     return DejeUtils.serialize(this, {
-        "indent": indent,
-        "prefix": (indent === "") ? "" : "\n",
-        "kv_space": (indent === "") ? "" : " "
+        'indent': indent,
+        'prefix': (indent === '') ? '' : '\n',
+        'kv_space': (indent === '') ? '' : ' '
     });
 }
 

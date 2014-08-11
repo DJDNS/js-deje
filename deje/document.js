@@ -13,10 +13,13 @@ function DejeDocument(content) {
 
 DejeDocument.prototype.key_order = ["topic", "events", "quorums", "timestamps"];
 DejeDocument.prototype.serialize = function(indent) {
+    if (indent === undefined) {
+        indent = '';
+    }
     return DejeUtils.serialize(this, {
-        "indent": indent,
-        "prefix": (indent === "") ? "" : "\n",
-        "kv_space": (indent === "") ? "" : " "
+        'indent': indent,
+        'prefix': (indent === '') ? '' : '\n',
+        'kv_space': (indent === '') ? '' : ' '
     });
 }
 
