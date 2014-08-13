@@ -9,5 +9,8 @@
         "url": "https://github.com/DJDNS/js-deje.git"
     },
     "bugs": "https://github.com/DJDNS/js-deje/issues",
-    "files": ["deje"]
+    "files": ["deje"],
+    "scripts": {
+        "test": "./serialization_tests/run"
+    }
 }
