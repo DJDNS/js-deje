@@ -1,0 +1,13 @@
+{
+    "name": "deje",
+    "version": "0.1.6",
+    "description": "DEJE library for JavaScript.",
+    "keywords": ["deje", "sync"],
+    "homepage": "https://github.com/DJDNS/js-deje",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/DJDNS/js-deje.git"
+    },
+    "bugs": "https://github.com/DJDNS/js-deje/issues",
+    "files": ["deje"]
+}
