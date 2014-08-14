@@ -41,6 +41,8 @@ function DejeClient(url, topic, options) {
         this._on_msg_sniff_ts.bind(this));
     this.cb_managers.msg.add('publish_ts',
         this._on_msg_publish_ts.bind(this));
+    this.cb_managers.update_ts.add('auto_nav',
+        this.navigateTimestamps.bind(this));
 
     options = (options != undefined) ? options : {};
     this.logger = options.logger || console.log;
@@ -140,6 +142,7 @@ DejeClient.prototype.publishTimestamps = function() {
 DejeClient.prototype.navigateTimestamps = function() {
     var current = undefined;
     var ev = undefined;
+    this.state.reset();
     for (var i=0; i<this.timestamps.length; i++) {
         try {
             ev = this.getEvent(this.timestamps[i]);
