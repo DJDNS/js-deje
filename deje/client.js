@@ -183,9 +183,11 @@ DejeClient.prototype.applyEvent = function(ev, noreset) {
     try {
         ev.apply(this.state);
     } catch (e) {
-        this.logger(e);
+        this.state.reset();
+        throw e;
+    } finally {
+        this.cb_managers.goto_event.run(ev);
     }
-    this.cb_managers.goto_event.run(ev);
 }
 
 return DejeClient;
