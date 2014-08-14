@@ -42,6 +42,11 @@ DejeEvent.prototype.apply = function(state) {
     state.hash = this.getHash();
 }
 
+DejeEvent.prototype.compatibleWith = function(other) {
+    // TODO: Actual logic
+    return true;
+}
+
 return DejeEvent;
 
 });

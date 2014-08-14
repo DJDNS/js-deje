@@ -137,12 +137,32 @@ DejeClient.prototype.publishTimestamps = function() {
     });
 }
 
+DejeClient.prototype.navigateTimestamps = function() {
+    var current = undefined;
+    var ev = undefined;
+    for (var i=0; i<this.timestamps.length; i++) {
+        try {
+            ev = this.getEvent(this.timestamps[i]);
+            if (!ev.compatibleWith(current)) {
+                throw "Not compatible with current event";
+            }
+            this.applyEvent(ev);
+            ev = current;
+        } catch(e) {
+            this.logger("Iteration " + i + ": " + e);
+        }
+    }
+}
+
 DejeClient.prototype.storeEvent = function(ev) {
     hash = ev.getHash();
     this.events[hash] = ev;
     this.cb_managers.store_event.run(ev);
 }
 DejeClient.prototype.getEvent = function(hash) {
+    if (this.events[hash] == undefined) {
+        throw "No such event " + hash;
+    }
     return this.events[hash];
 }
 DejeClient.prototype.promoteEvent = function(ev) {
