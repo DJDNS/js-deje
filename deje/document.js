@@ -1,9 +1,7 @@
 define(['deje/utils','deje/event'], function(DejeUtils, Event) {
 
 function DejeDocument(content) {
-    this.topic      = content.topic;
     this.events     = content.events;
-    this.quorums    = content.quorums;
     this.timestamps = content.timestamps;
 
     for (var k in this.events) {
@@ -11,7 +9,7 @@ function DejeDocument(content) {
     }
 }
 
-DejeDocument.prototype.key_order = ["topic", "events", "quorums", "timestamps"];
+DejeDocument.prototype.key_order = ["events", "timestamps"];
 DejeDocument.prototype.serialize = function(indent) {
     if (indent === undefined) {
         indent = '';
