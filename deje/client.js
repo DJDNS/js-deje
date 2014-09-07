@@ -37,8 +37,12 @@ function DejeClient(url, topic, options) {
         this._on_msg_sniff_events.bind(this));
     this.cb_managers.msg.add('publish_events',
         this._on_msg_publish_events.bind(this));
+    this.cb_managers.msg.add('nav_on_event_list',
+        this._on_msg_nav_on_event_list.bind(this));
     this.cb_managers.msg.add('sniff_ts',
         this._on_msg_sniff_ts.bind(this));
+    this.cb_managers.msg.add('verify_have_all_ts_events',
+        this._on_msg_verify_have_all_ts_events.bind(this));
     this.cb_managers.msg.add('publish_ts',
         this._on_msg_publish_ts.bind(this));
     this.cb_managers.update_ts.add('auto_nav',
@@ -91,9 +95,27 @@ DejeClient.prototype._on_msg_publish_events = function(topic, message) {
         "events": this.sortEventHashes(this.events),
     });
 }
+DejeClient.prototype._on_msg_nav_on_event_list = function(topic, message) {
+    if (message.type == "02-publish-events") {
+        this.navigateTimestamps();
+    }
+}
 DejeClient.prototype._on_msg_sniff_ts = function(topic, message) {
     if (message.type == "02-publish-timestamps") {
         this.setTimestamps(message.timestamps);
+    }
+}
+DejeClient.prototype._on_msg_verify_have_all_ts_events = function(topic, message) {
+    if (message.type == "02-publish-timestamps") {
+        for (var i=0; i<this.timestamps.length; i++) {
+            var ts = this.timestamps[i];
+            try {
+                this.getEvent(ts);
+            } catch (e) {
+                // If no such event already stored...
+                return this.publish({ "type": "02-request-events" });
+            }
+        }
     }
 }
 DejeClient.prototype._on_msg_publish_ts = function(topic, message) {
