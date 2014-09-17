@@ -31,7 +31,15 @@ function DejeClient(url, topic, options) {
         this.logger("sent: " + JSON.stringify(message));
     });
     this.cb_managers.msg.add('log', function(topic, message) {
-        this.logger("rcvd: " + JSON.stringify(message));
+        if (message.type == "log") {
+            var hostinfo = message.host ? (' (' + message.host + ')') : '';
+            var lines = message.value.replace(/\n$/, '').split("\n");
+            for (var i =0; i < lines.length; i++) {
+                this.logger('log' + hostinfo + ': ' + lines[i]);
+            }
+        } else {
+            this.logger("rcvd: " + JSON.stringify(message));
+        }
     });
     this.cb_managers.msg.add('sniff_events',
         this._on_msg_sniff_events.bind(this));
